@@ -8,11 +8,11 @@ SCREEN_HEIGHT = 50
 MAP_WIDTH = 80
 MAP_HEIGHT = 45
 
-ROOM_MAX_SIZE =  10
-ROOM_MIN_SIZE = 6
-MAX_ROOMS = 30
+ROOM_MAX_SIZE =  6
+ROOM_MIN_SIZE = 4
+MAX_ROOMS = 50
 MAX_ROOM_MONSTERS = 10
-FOV_ALGO = 0 #what algorythom to use
+FOV_ALGO = 2 #what algorythom to use
 FOV_LIGHT_WALLS = True #should we light walls
 TORCH_RADIUS = 10
 
@@ -78,6 +78,8 @@ class Object:
     def clear(self):
         #erase the character for this object
         libtcod.console_put_char(con, self.x, self.y, ' ', libtcod.BKGND_NONE)
+
+
 
 def is_blocked(x, y):
     #first test the map tile
@@ -249,7 +251,7 @@ def player_move_or_attack(dx, dy):
             break
 
     if target is not None:
-        print 'The' + target.name + 'laughs at your punny attempts to attack him!'
+        print 'The ' + target.name + ' laughs at your punny attempts to attack him!'
     else:
         player.move(dx, dy)
         fov_recompute = True
@@ -270,17 +272,17 @@ def handle_keys():
     if game_state == 'playing':
 
         if libtcod.console_is_key_pressed(libtcod.KEY_UP):
-            player.move(0, -1)
+            player_move_or_attack(0, -1)
             fov_recompute = True
 
         elif libtcod.console_is_key_pressed(libtcod.KEY_DOWN):
-            player.move(0, 1)
+            player_move_or_attack(0, 1)
             fov_recompute = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_LEFT):
-            player.move(-1, 0)
+            player_move_or_attack(-1, 0)
             fov_recompute = True
         elif libtcod.console_is_key_pressed(libtcod.KEY_RIGHT):
-            player.move(1, 0)
+            player_move_or_attack(1, 0)
             fov_recompute = True
         else:
             return 'didnt-take-turn'
@@ -298,7 +300,7 @@ objects = [player]
 
 make_map()
 
-fov_map = libtcod.map_new(MAP_WIDTH,MAP_HEIGHT)
+fov_map = libtcod.map_new(MAP_WIDTH, MAP_HEIGHT)
 for y in range(MAP_HEIGHT):
     for x in range(MAP_WIDTH) :
         libtcod.map_set_properties(fov_map, x, y, not map[x][y].block_sight, not map[x][y].blocked)
@@ -328,4 +330,4 @@ while not libtcod.console_is_window_closed():
     if game_state == 'playing' and player_action != 'didnt-take-turn':
         for object in objects:
             if object != player:
-                print 'The' + object.name + 'growls!'
+                print 'The ' + object.name + ' growls!'
